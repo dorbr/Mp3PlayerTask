@@ -47,17 +47,60 @@ const player = {
     { id: 1, name: 'Metal', songs: [1, 7, 4] },
     { id: 5, name: 'Israeli', songs: [4, 5] },
   ],
+  //function that looks for a song with a certin id in an array of songs.
+  //and "plays" it.
   playSong(song) {
-    console.log(/* your code here */)
+    let ans; // var to store the song with the right id.
+    // search for the song in the array.
+    this.songs.forEach(check => {
+      if(check.id == song)
+        ans = check;
+    });
+    let mmssDuration;
+    if(ans != undefined){
+      //calculate the duration in mm:ss format.
+      mmssDuration = calculateDuration(ans.duration);
+      //log the song in the right format.
+      console.log(`Playing ${ans.title} from ${ans.album} by ${ans.artist} | ${mmssDuration}.`);
+    }
+    else{
+      throw 'ID does not exist';
+    }
   },
 }
-
+//calls for the function that plays a song in the player.
 function playSong(id) {
-  // your code here
+  player.playSong(id);
 }
-
+//remove song by id.
 function removeSong(id) {
-  // your code here
+  
+  let indexToBeRemoved = 0;
+  let indexOfPlaylists = 0;
+  let idToBeRemoved;
+  let found = false;
+  //searchs in the array for a song with certain id and store its index.
+  for(indexToBeRemoved = 0;indexToBeRemoved < player.songs.length && !found;indexToBeRemoved++){
+    if(player.songs[indexToBeRemoved].id == id){
+      found = true;
+    }
+  }
+  //if song id does not exist throw an exception.
+  if(!found)
+    throw 'ID does not exist';
+  //remove song from player.
+  player.songs.splice(indexToBeRemoved-1,1);
+
+  //remove song from all playlists.
+  player.playlists.forEach(playlist => {
+    playlist.songs.forEach(song => {
+      if(song.id == idToBeRemoved)
+        playlist.songs.splice(indexOfPlaylists,1);
+      indexOfPlaylists++;
+    });
+    indexOfPlaylists = 0;
+  });
+  
 }
 
 function addSong(title, album, artist, duration, id) {
@@ -90,6 +133,15 @@ function searchByQuery(query) {
 
 function searchByDuration(duration) {
   // your code here
+}
+
+function calculateDuration(duration){
+  
+  mmDuration = Math.floor(duration / 60);
+  if(mmDuration < 10)
+    mmDuration = "0" + mmDuration;
+  ssDuration = duration - mmDuration * 60;
+  return mmDuration+":"+ssDuration;
 }
 
 module.exports = {
