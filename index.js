@@ -104,11 +104,36 @@ function removeSong(id) {
 }
 
 function addSong(title, album, artist, duration, id) {
-  // your code here
+  
+  if(id == undefined){
+    id = genrateSongID();
+  }
+  else{
+    player.songs.forEach(song => {
+      if(song.id == id){
+        throw "this ID is already taken";
+      }
+    });
+  }
+  let str = duration.split(":");
+  let min = str[0]*60;
+  let sec = str[1]*1
+  let durationInSec = min + sec;
+  console.log(id);
+  player.songs.push({id:id, title:title, album:album, artist:artist, duration:durationInSec});
+  return id;
 }
 
 function removePlaylist(id) {
-  // your code here
+  let found = false;
+  for (let i = 0; i < player.playlists.length && !found; i++) {
+    if(player.playlists[i].id == id){
+      player.playlists.splice(i,1);
+      found = true;
+    }
+  }
+  if(!found)
+    throw "ID does not exist";
 }
 
 function createPlaylist(name, id) {
@@ -142,6 +167,16 @@ function calculateDuration(duration){
     mmDuration = "0" + mmDuration;
   ssDuration = duration - mmDuration * 60;
   return mmDuration+":"+ssDuration;
+}
+function genrateSongID(){
+  id = 1;
+  player.songs.forEach(song => {
+    player.songs.forEach(s => {
+      if(song.id == id)
+        id++;
+    });
+  });
+  return id;
 }
 
 module.exports = {
