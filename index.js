@@ -187,9 +187,19 @@ function editPlaylist(playlistId, songId) {
   }
   
 }
-
+//sum the duration of all the song in a playlist.
 function playlistDuration(id) {
-  // your code here
+  let arr = getPlaylistAndSongIndex(id, 1);
+  let index = arr[0];
+  let sum = 0;
+  player.songs.forEach(song => {
+    player.playlists[index].songs.forEach(songID => {
+      if(song.id == songID){
+        sum += song.duration;
+      }
+    });
+  });
+  return sum;
 }
 
 function searchByQuery(query) {
