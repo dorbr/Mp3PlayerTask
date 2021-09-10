@@ -102,7 +102,7 @@ function removeSong(id) {
   });
   
 }
-
+//get song detailes, create a new song with those detailes, and returns the id of the new song.
 function addSong(title, album, artist, duration, id) {
   
   if(id == undefined){
@@ -115,15 +115,15 @@ function addSong(title, album, artist, duration, id) {
       }
     });
   }
-  let str = duration.split(":");
-  let min = str[0]*60;
-  let sec = str[1]*1
-  let durationInSec = min + sec;
+  let t = duration.split(":");
+  let minutes = t[0]*60;
+  let seconds = t[1]*1
+  let durationInSec = minutes + seconds;
   console.log(id);
   player.songs.push({id:id, title:title, album:album, artist:artist, duration:durationInSec});
   return id;
 }
-
+//gets id and remove the corresponding playlist from player
 function removePlaylist(id) {
   let found = false;
   for (let i = 0; i < player.playlists.length && !found; i++) {
@@ -135,14 +135,32 @@ function removePlaylist(id) {
   if(!found)
     throw "ID does not exist";
 }
-
+//gets a name and id, create a new playlist, and returns the id of the new playlist
 function createPlaylist(name, id) {
-  // your code here
+  if(id == undefined) { id = genratePlaylistID(); }
+  else{
+    player.playlists.forEach(playlist => {
+      if(playlist.id == id)
+        throw "ID is already taken";
+    });
+  }
+  player.playlists.push({id:id, name:name, songs:[]});
+  return id;
+}
+//gets a playlist's id and play all the songs in it.
+function playPlaylist(id) {
+  let found = false;
+  player.playlists.forEach(playlist => {
+    if(playlist.id == id){
+      for (let i = 0; i < playlist.songs.length; i++) {
+        playSong(playlist.songs[i]);
+      }
+      found = true;
+    }
+  });
+  if(!found) throw "ID does not exist";
 }
 
-function playPlaylist(id) {
-  // your code here
-}
 
 function editPlaylist(playlistId, songId) {
   // your code here
@@ -159,26 +177,33 @@ function searchByQuery(query) {
 function searchByDuration(duration) {
   // your code here
 }
-
+//gets a duration in seconds and returns a duration in mm:ss format.
 function calculateDuration(duration){
-  
   mmDuration = Math.floor(duration / 60);
   if(mmDuration < 10)
     mmDuration = "0" + mmDuration;
   ssDuration = duration - mmDuration * 60;
   return mmDuration+":"+ssDuration;
 }
+//returns a new unused id number for songs.
 function genrateSongID(){
   id = 1;
   player.songs.forEach(song => {
-    player.songs.forEach(s => {
-      if(song.id == id)
-        id++;
-    });
+    if(song.id > id)
+      id = song.id;
   });
-  return id;
+  return id + 1;
 }
-
+//returns a new unused id number for playlists.
+function genratePlaylistID(){
+  id = 1;
+  player.playlists.forEach(playlist => {
+    if(playlist.id > id)
+      id = playlist.id;
+  });
+  return id + 1;
+  
+}
 module.exports = {
   player,
   playSong,
