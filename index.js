@@ -161,9 +161,31 @@ function playPlaylist(id) {
   if(!found) throw "ID does not exist";
 }
 
-
+//gets a song's id and a playlist's id and adds/removes the song from the playlist, if the playlist contains 0 songs the playlist will be deleted.
 function editPlaylist(playlistId, songId) {
-  // your code here
+  let indexes = getPlaylistAndSongIndex(playlistId, songId);
+  let indexOfPlaylist = indexes[0];
+  let indexOfSong = indexes[1];
+  console.log(indexOfPlaylist+",,,"+indexOfSong);
+  if(indexOfSong != -1){
+    if(player.playlists[indexOfPlaylist].songs.length == 1){
+      player.playlists.splice(indexOfPlaylist,1);
+    }
+    else{
+      player.playlists[indexOfPlaylist].songs.splice(indexOfSong,1);
+    }
+  }
+  else{
+    let exist = false;
+    player.songs.forEach(song => {
+      if(song.id == songId)
+        exist = true;
+    });
+    if(!exist)
+      throw "song does not exist";
+    player.playlists[indexOfPlaylist].songs.push(songId);
+  }
+  
 }
 
 function playlistDuration(id) {
@@ -203,6 +225,28 @@ function genratePlaylistID(){
   });
   return id + 1;
   
+}
+//gets a playlist's id and a song's id and returns the index of the playlist int the array of playlists, also returns the song's index in the picked playlist.
+function getPlaylistAndSongIndex(playlistID, songID){
+  let indexOfSong = -1;
+  let indexOfPlaylist = -1;
+  for (let i = 0; i < player.playlists.length; i++) {
+    const playlist = player.playlists[i];
+    if(playlist.id == playlistID){
+      indexOfPlaylist = i;
+      for (let j = 0; j < playlist.songs.length; j++) {
+        const song = playlist.songs[j];
+        if(song == songID){
+          indexOfSong = j;
+        }
+      }
+    }
+  }
+  if(indexOfPlaylist == -1){
+    throw "playlist index does not exisst";
+  }
+  return [indexOfPlaylist,indexOfSong];
+
 }
 module.exports = {
   player,
