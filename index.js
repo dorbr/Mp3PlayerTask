@@ -201,9 +201,33 @@ function playlistDuration(id) {
   });
   return sum;
 }
-
+//a function that gets a string and returns an object that contains an array of all songs and an array of all playlists that inculdes the string.
 function searchByQuery(query) {
-  // your code here
+  let obj = {
+    songs:[],
+    playlists:[]
+  }
+  query = query.toLowerCase();
+  player.songs.forEach(song => {
+    if(song.title.toLowerCase().includes(query)
+     || song.album.toLowerCase().includes(query) 
+     || song.artist.toLowerCase().includes(query)){
+        obj.songs.push(song);
+     }
+  });
+  player.playlists.forEach(playlist => {
+    if(playlist.name.toLowerCase().includes(query)){
+      obj.playlists.push(playlist);
+    }
+  });
+  obj.songs.sort(function(a, b) {
+    return a.title.localeCompare(b.title);
+  });
+  
+  obj.playlists.sort(function(a, b) {
+    return a.name.localeCompare(b.name);
+  });
+  return obj;
 }
 
 function searchByDuration(duration) {
@@ -258,6 +282,9 @@ function getPlaylistAndSongIndex(playlistID, songID){
   return [indexOfPlaylist,indexOfSong];
 
 }
+function alphaNumericSort(arr){
+  
+};
 module.exports = {
   player,
   playSong,
