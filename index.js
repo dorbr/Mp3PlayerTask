@@ -119,7 +119,6 @@ function addSong(title, album, artist, duration, id) {
   let minutes = t[0]*60;
   let seconds = t[1]*1
   let durationInSec = minutes + seconds;
-  console.log(id);
   player.songs.push({id:id, title:title, album:album, artist:artist, duration:durationInSec});
   return id;
 }
@@ -166,7 +165,6 @@ function editPlaylist(playlistId, songId) {
   let indexes = getPlaylistAndSongIndex(playlistId, songId);
   let indexOfPlaylist = indexes[0];
   let indexOfSong = indexes[1];
-  console.log(indexOfPlaylist+",,,"+indexOfSong);
   if(indexOfSong != -1){
     if(player.playlists[indexOfPlaylist].songs.length == 1){
       player.playlists.splice(indexOfPlaylist,1);
@@ -229,9 +227,38 @@ function searchByQuery(query) {
   });
   return obj;
 }
-
+//a function that gets a duration and returns a playlist or a song that its duration length is closest to the duration.
 function searchByDuration(duration) {
-  // your code here
+  let t = duration.split(":");
+  let minutes = t[0]*60;
+  let seconds = t[1]*1
+  let durationInSec = minutes + seconds;
+  let songMinDif = Math.abs(player.songs[0].duration - durationInSec);
+  let playlistMinDif = Math.abs(playlistDuration(player.playlists[0].id) - durationInSec);
+  let closestPlaylist  = player.playlists[0];
+  let closestSong = player.songs[0];
+  player.songs.forEach(song => {
+    if(songMinDif > Math.abs(song.duration - durationInSec)){
+      songMinDif = Math.abs(song.duration - durationInSec);
+      closestSong = song;
+    }
+  });
+  player.playlists.forEach(playlist => {
+    
+    if(playlistMinDif > Math.abs(playlistDuration(playlist.id) - durationInSec)){
+      playlistMinDif = Math.abs(playlistDuration(playlist.id) - durationInSec);
+      closestPlaylist = playlist;
+      console.log("closest playlist : " + `${closestPlaylist.name}`);
+    }
+  });
+  if(playlistMinDif > songMinDif){
+    return closestSong;
+  }
+  else{
+    return closestPlaylist;
+  }
+  
+ 
 }
 //gets a duration in seconds and returns a duration in mm:ss format.
 function calculateDuration(duration){
@@ -282,9 +309,6 @@ function getPlaylistAndSongIndex(playlistID, songID){
   return [indexOfPlaylist,indexOfSong];
 
 }
-function alphaNumericSort(arr){
-  
-};
 module.exports = {
   player,
   playSong,
